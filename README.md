@@ -2,7 +2,7 @@
 
 This project implements an AI agent that leverages the Gemini API to interact with the file system. The agent can perform various operations such as listing files, reading file contents, executing Python scripts, and writing to files.
 
-This README.md file was written by the AI.
+This README.md file was written by the AI. 
 
 ## Features:
 
@@ -11,9 +11,10 @@ This README.md file was written by the AI.
     - Read the content of files (up to a maximum size).
     - Execute Python files with optional arguments.
     - Write content to specified files, creating directories if they don't exist.
-- **Configurable AI Model**: The agent uses the `gemini-2.5-flash` model, which can be configured.
+- **Configurable AI Model**: The agent uses the `gemini-2.5-flash` model as default, which can be configured in the config.py file.
 - **Loop Limit**: The AI agent has a configurable maximum number of interaction loops (`AI_AGENT_MAX_LOOPS`) to prevent infinite execution.
 - **API Key Management**: The Gemini API key is loaded from an `.env` file, ensuring secure handling of credentials.
+- **Sandboxed Workspace**: The agent is intentionally restricted to operate under a specific directory (currently `./calculator`) and cannot touch files outside that root (configured in `config.py`).
 
 ## How it Works:
 
@@ -27,14 +28,20 @@ The `call_functions.py` file defines the available functions for the AI agent an
     ```
     GEMINI_API_KEY=YOUR_GEMINI_API_KEY
     ```
-2.  **Dependencies**: (Presumably, dependencies like `google-generativeai` and `python-dotenv` would be installed, though not explicitly shown in the provided files).
+2.   **Dependencies**: Dependencies are defined in `pyproject.toml` and locked in `uv.lock`.
+   Install them with:
+   ```
+   uv sync
+   ```
+   Notes:
+   - `uv sync` typically creates a local virtual environment (often `.venv/`), which is intentionally not committed to git.
 
 ## Usage:
 
 Run the `main.py` script with a user prompt:
 
 ```bash
-python main.py "Your prompt here" [--verbose]
+uv run main.py "Your prompt here" [--verbose]
 ```
 
 -   `"Your prompt here"`: The task or question you want the AI agent to address.
