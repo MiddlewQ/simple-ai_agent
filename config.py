@@ -1,0 +1,5 @@
+MAX_CHARS = 10000
+TIMEOUT_SECONDS = 30
+
+
+AI_MODEL = "gemini-2.5-flash"
