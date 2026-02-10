@@ -1,11 +1,11 @@
-import os, argparse
+import os, sys, argparse
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
 from call_functions import available_functions, function_call
 from prompts import system_prompt
-from config import AI_MODEL
+from config import AI_AGENT_MAX_LOOPS, AI_MODEL
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -26,27 +26,39 @@ if args.verbose:
 messages = [types.Content(role="user", parts = [types.Part(text=args.user_prompt)])]
 
 
-response = client.models.generate_content(
-    model=AI_MODEL, 
-    contents=messages,
-    config=types.GenerateContentConfig(
-        tools=[available_functions],
-        system_instruction=system_prompt, 
-        # temperature=0
-    ),
-)
+for i in range(AI_AGENT_MAX_LOOPS):
+    response = client.models.generate_content(
+        model=AI_MODEL, 
+        contents=messages,
+        config=types.GenerateContentConfig(
+            tools=[available_functions],
+            system_instruction=system_prompt, 
+            # temperature=0
+        ),
+    )
 
-usage_stats = response.usage_metadata
-prompt_tokens = usage_stats.prompt_token_count
-response_tokens = usage_stats.candidates_token_count
-if args.verbose:
-    print(f"Prompt tokens: {prompt_tokens}")
-    print(f"Response tokens: {response_tokens}")
+    if response.candidates:
+        for candidate in response.candidates:
+            if candidate.content:
+                messages.append(candidate.content)
 
-function_results = []
-if response.function_calls:
-    for func_call in response.function_calls:
-        if func_call:
+
+    usage_stats = response.usage_metadata
+    if usage_stats is not None:
+        prompt_tokens = usage_stats.prompt_token_count
+        response_tokens = usage_stats.candidates_token_count
+        if args.verbose:
+            print(f"Prompt tokens: {prompt_tokens}")
+            print(f"Response tokens: {response_tokens}")
+    else:
+        print("No usage metadata on this response.")
+
+    candidate = []
+    if response.function_calls:
+        for func_call in response.function_calls:
+            if not func_call:
+                continue
+
             function_call_result = function_call(func_call, args.verbose) 
             if not function_call_result.parts:
                 raise ValueError("function call result: missing parts")
@@ -54,9 +66,16 @@ if response.function_calls:
                 raise ValueError("function call result: missing function response")
             if not function_call_result.parts[0].function_response.response:
                 raise ValueError("function call result: missing function response response")
-            function_results.append(function_call_result.parts[0])
+            candidate.append(function_call_result.parts[0])
+
             if args.verbose:
-                print(f"-> {function_call_result.parts[0].function_response.response}")
-else:
-    print("Response:")
-    print(response.text)
+                print(f"-> {function_call_result.parts[0].function_response.response['result']}")
+        messages.append(types.Content(role="user", parts=candidate))
+        if i == AI_AGENT_MAX_LOOPS:
+            print(f'Error: Reached max iterations without answer. Exiting.')
+            sys.exit(1)
+    else:
+        print("Response:")
+        print(response.text)
+        break
+

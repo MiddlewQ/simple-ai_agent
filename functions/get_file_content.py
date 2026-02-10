@@ -1,5 +1,5 @@
 import os
-from config import MAX_CHARS
+from config import FILE_MAX_CHARS
 from google.genai import types
 
 schema_get_file_content = types.FunctionDeclaration(
@@ -21,8 +21,8 @@ def get_file_content(working_directory, file_path):
         return f'Error: File not found or is not a regular file: "{file_path}"'
     
     with open(target_file, mode='r') as f:
-        content = f.read(MAX_CHARS)
+        content = f.read(FILE_MAX_CHARS)
         if f.read(1):
-            content += f'...File "{file_path}" truncated at {MAX_CHARS}'
+            content += f'...File "{file_path}" truncated at {FILE_MAX_CHARS}'
     
     return content
