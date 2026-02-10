@@ -1,5 +1,6 @@
 from google.genai import types
 
+from config import AI_WORKING_DIRECTORY
 from functions.get_files_info import *
 from functions.get_file_content import *
 from functions.run_python_file import *
@@ -35,7 +36,7 @@ def function_call(function_call, verbose=False):
         )
 
     args = dict(function_call.args) if function_call.args else {}
-    args['working_directory'] = './calculator'
+    args['working_directory'] = AI_WORKING_DIRECTORY
     function_result = function_map[function_name](**args)
 
     return types.Content(

@@ -33,7 +33,6 @@ for i in range(AI_AGENT_MAX_LOOPS):
         config=types.GenerateContentConfig(
             tools=[available_functions],
             system_instruction=system_prompt, 
-            # temperature=0
         ),
     )
 
