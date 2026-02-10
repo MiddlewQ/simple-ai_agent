@@ -25,15 +25,16 @@ The `call_functions.py` file defines the available functions for the AI agent an
 ## Setup:
 
 1.  **Environment Variables**: Create a `.env` file in the project root and add your Gemini API key:
-    ```
-    GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-    ```
-2.   **Dependencies**: Dependencies are defined in `pyproject.toml` and locked in `uv.lock`.
-   Install them with:
-   ```
-   uv sync
-   ```
-   Notes:
+
+```
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+2.   **Dependencies**: Dependencies are defined in `pyproject.toml` and locked in `uv.lock`. Install them with:
+```
+uv sync
+```
+Notes:
    - `uv sync` typically creates a local virtual environment (often `.venv/`), which is intentionally not committed to git.
 
 ## Usage:
