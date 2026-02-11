@@ -1,5 +1,5 @@
 import os
-from config import FILE_MAX_CHARS
+from agent.config import FILE_MAX_CHARS
 from google.genai import types
 
 schema_get_file_content = types.FunctionDeclaration(

@@ -1,4 +1,4 @@
-from functions.write_file import write_file
+from agent.tools.fs_write import write_file
 
 a = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
 b = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")

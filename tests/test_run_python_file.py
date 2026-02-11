@@ -1,4 +1,4 @@
-from functions.run_python_file import run_python_file
+from agent.tools.py_run import run_python_file
 
 a = run_python_file("calculator", "main.py")
 b = run_python_file("calculator", "main.py", ["3 + 5"]) 

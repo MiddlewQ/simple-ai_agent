@@ -1,4 +1,4 @@
-from functions.get_file_content import get_file_content
+from agent.tools.fs_list import get_file_content
 
 a = get_file_content("calculator", "main.py")
 b = get_file_content("calculator", "pkg/calculator.py")

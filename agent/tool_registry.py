@@ -1,10 +1,10 @@
 from google.genai import types
 
-from config import AI_WORKING_DIRECTORY
-from functions.get_files_info import *
-from functions.get_file_content import *
-from functions.run_python_file import *
-from functions.write_file import *
+from .config import AI_WORKING_DIRECTORY
+from .tools.fs_read import *
+from .tools.fs_list import *
+from .tools.py_run import *
+from .tools.fs_write import *
 
 available_functions = types.Tool(
     function_declarations=[schema_get_files_info, schema_get_file_content, schema_run_python_file, schema_write_file]
@@ -24,7 +24,7 @@ def function_call(function_call, verbose=False):
     }
     function_name = function_call.name or ""
     
-    if not function_name:
+    if function_name not in function_map:
         return types.Content(
             role="tool",
             parts=[

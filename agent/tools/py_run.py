@@ -1,7 +1,7 @@
 import os, subprocess
 from google.genai import types
 
-from config import TIMEOUT_SECONDS
+from agent.config import TIMEOUT_SECONDS
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
