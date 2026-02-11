@@ -68,4 +68,3 @@ uv run python -m agent.main "Your prompt here" [--verbose]
 -   `tests/`: Contains project tests.
 -   `sandbox/`: A directory that might be used for testing or temporary files during development.
 
-refactor: Created a mirror of README.md with updated file paths and project structure, and added an AI-generated disclaimer.
