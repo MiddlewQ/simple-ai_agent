@@ -37,14 +37,14 @@ The `agent/tool_registry.py` file defines the available functions for the AI age
     ```
 
     Notes:
-    -   `uv sync` typically creates a local virtual environment (often `.venv/`), which is intentionally not committed to git.
+    -   `uv sync` creates a local virtual environment (`.venv/`).
 
 ## Usage:
 
 Run the `agent/cli.py` script with a user prompt:
 
 ```bash
-uv run python -m agent.main "Your prompt here" [--verbose]
+uv run agent "Your prompt here" [--verbose]
 ```
 
 -   `"Your prompt here"`: The task or question you want the AI agent to address.
@@ -53,6 +53,7 @@ uv run python -m agent.main "Your prompt here" [--verbose]
 ## Project Structure:
 
 -   `agent/`: The core directory for the AI agent.
+    -   `__init__.py`: Marks agent/ as a Python package so it can be built/installed (needed for the uv run agent \<prompt> console script and Hatchling packaging).
     -   `cli.py`: The command-line interface for the AI agent.
     -   `runner.py`: Orchestrates the AI agent's interaction loop and Gemini client.
     -   `tool_registry.py`: Defines and maps the callable functions for file system interaction.
