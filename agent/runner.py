@@ -22,15 +22,7 @@ def _require_api_key() -> str:
     return api_key
 
 
-def _tool_call_to_part(func_call, verbose: bool) -> types.Part:
-    tool_content = function_call(func_call, verbose)
-    if not tool_content.parts or len(tool_content.parts) != 1:
-        raise ValueError(f"Tool content result had unexpected parts: {tool_content.parts!r}")
-    part = tool_content.parts[0]
-    func_response = part.function_response
-    if func_response is None or func_response.response is None:
-        raise ValueError("Tool call result missing function_response.response")
-    return part
+
 
 def run_agent(prompt, verbose) -> RunResult:
     api_key = _require_api_key()
@@ -65,23 +57,31 @@ def run_agent(prompt, verbose) -> RunResult:
                 print(f"Prompt tokens: {prompt_tokens}")
                 print(f"Response tokens: {response_tokens}")
 
+
+
         if response.function_calls:
-            tool_parts: list[types.Part] = []
             for fc in response.function_calls:
                 if fc is None:
                     continue
-                part = _tool_call_to_part(fc, verbose)
-                tool_parts.append(part)
+
+                tool_content = function_call(fc, verbose)  # Content(role="tool", ...)
+                messages.append(tool_content)
+
                 if verbose:
-                    func_resp = part.function_response
-                    if func_resp is None:
-                        raise ValueError("Tool part missing function_response")
-                    resp = func_resp.response
-                    if not isinstance(resp, dict) or "result" not in resp:
-                        raise ValueError(f"Tool response missing 'result': {resp!r}")
-                    print(f"-> {resp['result']}")
-            messages.append(types.Content(role="user", parts=tool_parts))
+                    if not tool_content.parts:
+                        raise ValueError("Tool content has no parts")
+                    part = tool_content.parts[0]
+                    fr = part.function_response
+                    if fr is None or fr.response is None or not isinstance(fr.response, dict):
+                        raise ValueError("Tool content missing function_response.response dict")
+
+                    r = fr.response
+                    if r.get("ok") is True:
+                        print(f"-> OK: {r.get('result')!r}")
+                    else:
+                        print(f"-> ERR: {r.get('error')!r}")
             continue
+
         
         return RunResult(
             text=response.text or "",

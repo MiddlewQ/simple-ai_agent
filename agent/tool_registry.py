@@ -1,13 +1,13 @@
 from google.genai import types
 
 from .config import AI_WORKING_DIRECTORY
-from .tools.fs_read import *
 from .tools.fs_list import *
+from .tools.fs_read import *
 from .tools.py_run import *
 from .tools.fs_write import *
 
 available_functions = types.Tool(
-    function_declarations=[schema_get_files_info, schema_get_file_content, schema_run_python_file, schema_write_file]
+    function_declarations=[schema_fs_list, schema_fs_read, schema_py_run, schema_fs_write]
 )
 
 def function_call(function_call, verbose=False):
@@ -16,35 +16,43 @@ def function_call(function_call, verbose=False):
     else:
         print(f' - Calling function: {function_call.name}')
 
-    function_map = {
-        "get_file_content": get_file_content,
-        "get_files_info": get_files_info,
-        "run_python_file": run_python_file,
-        "write_file": write_file,
+    tool_map = {
+        "get_file_content": fs_read,
+        "get_files_info": fs_list,
+        "run_python_file": py_run,
+        "write_file": fs_write,
     }
-    function_name = function_call.name or ""
     
-    if function_name not in function_map:
+    tool_name = function_call.name or ""
+    if tool_name not in tool_map:
+        tool_response = {
+            "ok": False,
+            "error": {
+                "type": "UnknownFunction",
+                "message": f"Unknown function: {tool_name}"
+            }
+        }
         return types.Content(
             role="tool",
             parts=[
                 types.Part.from_function_response(
-                    name=function_name,
-                    response={"error": f"Unknown function: {function_name}"},
+                    name=tool_name,
+                    response=tool_response
                 )
             ],
         )
 
     args = dict(function_call.args) if function_call.args else {}
     args['working_directory'] = AI_WORKING_DIRECTORY
-    function_result = function_map[function_name](**args)
+
+    tool_response = tool_map[tool_name](**args)
 
     return types.Content(
         role="tool",
         parts=[
             types.Part.from_function_response(
-                name=function_name,
-                response={"result": function_result},
+                name=tool_name,
+                response=tool_response,
             )
         ],
     )
