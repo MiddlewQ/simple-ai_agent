@@ -1,8 +1,10 @@
-from agent.tools.fs_list import get_file_content
+from agent.tools.fs_read import fs_read
+from .test_helper import show
 
-a = get_file_content("calculator", "main.py")
-b = get_file_content("calculator", "pkg/calculator.py")
-c = get_file_content("calculator", "/bin/cat")
-d = get_file_content("calculator", "pkg/does_not_exist")
-
-print("\n".join([a,b,c,d]))
+for expect, args in [
+    (None, ("sandbox", "calculator/main.py")),
+    (None, ("sandbox", "calculator/pkg/calculator.py")),
+    ("PathOutsideWorkingDirectory", ("sandbox", "/bin/cat")),
+    ("NotAFile", ("sandbox", "pkg/does_not_exist")),  # or whatever you return
+]:
+    show(fs_read(*args), expect)

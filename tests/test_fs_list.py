@@ -1,7 +1,10 @@
-from agent.tools.fs_read import get_files_info
+from agent.tools.fs_list import fs_list
+from .test_helper import show
 
-a = get_files_info("calculator", ".")
-b = get_files_info("calculator", "pkg")
-c = get_files_info("calculator", "/bin")
-d = get_files_info("calculator", "../")
-print("\n".join([a,b,c,d]))
+for expect, args in [
+    (None, ("sandbox", ".")),
+    (None, ("sandbox", "calculator/pkg")),
+    ("OutsideWorkingDirectory", ("sandbox", "/bin")),
+    ("OutsideWorkingDirectory", ("sandbox", "../")),
+]:
+    show(fs_list(*args), expect)
