@@ -27,13 +27,18 @@ def fs_list(working_directory, directory="."):
     target_dir = os.path.normpath(os.path.join(working_directory_abs, directory))
     if os.path.commonpath([target_dir, working_directory_abs]) != working_directory_abs:
         return response_error(
-            error_type="OutsideWorkingDirectory",
+            error_type="PathOutsideWorkingDirectory",
             message=f'Cannot list "{directory}" as it is outside the permitted working directory'
+        )
+    if not os.path.exists(target_dir):
+        return response_error(
+            error_type="NotFound",
+            message=f'"{directory}" does not exist.'
         )
     if not os.path.isdir(target_dir):
         return response_error(
             error_type="NotADirectory",
-            message=f'"Cannot list files in "{directory}" as it is not a directory'
+            message=f'Cannot list files in "{directory}" as it is not a directory'
         )
     objects = []
     try:
